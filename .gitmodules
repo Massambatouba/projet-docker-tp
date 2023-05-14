@@ -1,0 +1,9 @@
+[submodule "produits"]
+	path = produits
+	url = https://github.com/Massambatouba/test-springboot.git
+[submodule "Mesproduits"]
+	path = Mesproduits
+	url = https://github.com/Massambatouba/MesProduit.git
+[submodule "produitbackend"]
+	path = produitbackend
+	url = https://github.com/Massambatouba/test-springboot.git

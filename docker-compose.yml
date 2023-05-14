@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+# service est défini avec l'image docker à utiliser pour la base de données mysql
+  db:
+# image officielle de mysql version 5.7
+    image: 'mysql/mysql-server:5.7'
+# 3038 est exposé pour permettre aux autres services de se connecter à la base de données
+    ports:
+           - "3308:3306"
+# définition du nom de la base de données, le nom d'utilisateur et le mort de passe
+    environment:
+           - MYSQL_ROOT_PASSWORD=""
+           - MYSQL_DATABASE=spring_DB_produits
+           - MYSQL_USER=root
+           - MYSQL_PASSWORD=""
+           - MYSQL_ROOT_HOST=%
+    volumes:
+           - ./my-datavolume:/var/lib/mysql
+# healthcheck teste si le server est mysql est pret à recevoir des connexions
+    healthcheck:
+           test: ["CMD","mysqladmin","ping","-h","localhost"]
+           timeout: 20s
+           retries: 10
+    restart: always
+# ce service est defini avec l'image docker à utiliser pour le backend springboot
+  backendserver:
+    build: ./packages/produits/
+# 8081 est exposé pour permettre aux clients d'accéder au backend
+    ports:
+           - "8080:8080"
+    links:
+           - "db"
+    depends_on:
+           - "db"
+    restart: always
+  frontend:
+  # utilisation de l'image officielle de node.js version 14.17.0 pour le serveur de frotend
+    image: node:14.17.0-alpine
+    build: ./packages/MesProduits/
+    links:
+           - "backendserver"
+    depends_on:
+           - "backendserver"
+# 80 est exposé pour permettre aux clients d'accéder au frontend
+    ports:
+           - "4200:4200" 
